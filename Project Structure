@@ -1,0 +1,16 @@
+LibraryManagementSystem/ 
+├── src/ 
+│   ├── model/ 
+│   │   └── Book.java 
+│   ├── dao/ 
+│   │   └── BookDAO.java 
+│   ├── util/ 
+│   │   └── DBUtil.java 
+│   └── ui/ 
+│      
+ └── LibraryUI.java 
+├── lib/ 
+│   └── mysql-connector-java
+8.0.23.jar 
+└── database/ 
+└── library_db.sql
