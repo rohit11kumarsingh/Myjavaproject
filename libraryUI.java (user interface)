@@ -1,0 +1,196 @@
+package ui; 
+import dao.BookDAO; 
+import model.Book; 
+import javax.swing.*; 
+import java.awt.*; 
+import java.awt.event.ActionEvent; 
+import java.awt.event.ActionListener; 
+import java.util.List; 
+public class LibraryUI extends JFrame { 
+private BookDAO bookDAO; 
+private JTextField titleField, authorField, searchField; 
+private JTextArea outputArea; 
+public LibraryUI() { 
+bookDAO = new BookDAO(); 
+initializeUI(); 
+} 
+private void initializeUI() { 
+setTitle("Library Management System"); 
+setSize(600, 500); 
+setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
+setLocationRelativeTo(null); 
+// Main panel with border layout 
+JPanel mainPanel = new JPanel(new BorderLayout(10, 
+10)); 
+mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 
+10, 10, 10)); 
+// Input panel 
+JPanel inputPanel = new JPanel(new GridLayout(3, 2, 5, 
+5)); 
+inputPanel.setBorder(BorderFactory.createTitledBorder("Add 
+New Book")); 
+inputPanel.add(new JLabel("Title:")); 
+t
+ itleField = new JTextField(); 
+inputPanel.add(titleField); 
+inputPanel.add(new JLabel("Author:")); 
+authorField = new JTextField(); 
+inputPanel.add(authorField); 
+JButton addButton = new JButton("Add Book"); 
+addButton.addActionListener(new AddBookListener()); 
+inputPanel.add(addButton); 
+// Search panel 
+JPanel searchPanel = new JPanel(new BorderLayout(5, 
+5)); 
+searchPanel.setBorder(BorderFactory.createTitledBorder("Se
+ arch Books")); 
+JPanel searchInputPanel = new JPanel(new 
+BorderLayout(5, 5)); 
+searchField = new JTextField(); 
+JButton searchButton = new JButton("Search"); 
+searchButton.addActionListener(new 
+SearchBookListener()); 
+searchInputPanel.add(searchField, 
+BorderLayout.CENTER); 
+searchInputPanel.add(searchButton, 
+BorderLayout.EAST); 
+searchPanel.add(searchInputPanel, 
+BorderLayout.NORTH); 
+// Output area 
+outputArea = new JTextArea(); 
+outputArea.setEditable(false); 
+JScrollPane scrollPane = new JScrollPane(outputArea); 
+// Button panel 
+JPanel buttonPanel = new JPanel(new 
+FlowLayout(FlowLayout.CENTER, 10, 5)); 
+JButton showAllButton = new JButton("Show All Books"); 
+showAllButton.addActionListener(new 
+ShowAllBooksListener()); 
+buttonPanel.add(showAllButton); 
+JButton deleteButton = new JButton("Delete Selected 
+Book"); 
+deleteButton.addActionListener(new 
+DeleteBookListener()); 
+buttonPanel.add(deleteButton); 
+// Add components to main panel 
+mainPanel.add(inputPanel, BorderLayout.NORTH); 
+mainPanel.add(searchPanel, BorderLayout.CENTER); 
+mainPanel.add(scrollPane, BorderLayout.SOUTH); 
+// Add panels to frame 
+add(mainPanel, BorderLayout.CENTER); 
+add(buttonPanel, BorderLayout.SOUTH); 
+} 
+private class AddBookListener implements ActionListener { 
+@Override 
+public void actionPerformed(ActionEvent e) { 
+String title = titleField.getText().trim(); 
+String author = authorField.getText().trim(); 
+if (title.isEmpty() || author.isEmpty()) { 
+JOptionPane.showMessageDialog(LibraryUI.this,  
+"Please enter both title and author",  
+"Error", JOptionPane.ERROR_MESSAGE); 
+return; 
+} 
+Book book = new Book(title, author); 
+if (bookDAO.addBook(book)) { 
+JOptionPane.showMessageDialog(LibraryUI.this,  
+"Book added successfully",  
+"Success", 
+JOptionPane.INFORMATION_MESSAGE); 
+t
+ itleField.setText(""); 
+authorField.setText(""); 
+} else { 
+JOptionPane.showMessageDialog(LibraryUI.this,  
+"Failed to add book",  
+"Error", JOptionPane.ERROR_MESSAGE); 
+} 
+} 
+} 
+private class ShowAllBooksListener implements 
+ActionListener { 
+@Override 
+public void actionPerformed(ActionEvent e) { 
+List<Book> books = bookDAO.getAllBooks(); 
+displayBooks(books); 
+} 
+} 
+private class SearchBookListener implements 
+ActionListener { 
+@Override 
+public void actionPerformed(ActionEvent e) { 
+String searchText = searchField.getText().trim(); 
+if (searchText.isEmpty()) { 
+JOptionPane.showMessageDialog(LibraryUI.this,  
+"Please enter a search term",  
+"Error", JOptionPane.ERROR_MESSAGE); 
+return; 
+} 
+try { 
+// Try searching by ID first 
+int id = Integer.parseInt(searchText); 
+Book book = bookDAO.searchBookById(id); 
+if (book != null) { 
+outputArea.setText(book.toString()); 
+} else { 
+outputArea.setText("No book found with ID: " + 
+id); 
+} 
+} catch (NumberFormatException ex) { 
+// If not a number, search by title 
+List<Book> books = 
+bookDAO.searchBooksByTitle(searchText); 
+displayBooks(books); 
+} 
+} 
+} 
+private class DeleteBookListener implements 
+ActionListener { 
+@Override 
+public void actionPerformed(ActionEvent e) { 
+String searchText = searchField.getText().trim(); 
+if (searchText.isEmpty()) { 
+JOptionPane.showMessageDialog(LibraryUI.this,  
+"Please enter a book ID to delete",  
+"Error", JOptionPane.ERROR_MESSAGE); 
+return; 
+} 
+try { 
+int id = Integer.parseInt(searchText); 
+if (bookDAO.deleteBook(id)) { 
+JOptionPane.showMessageDialog(LibraryUI.this,  
+"Book deleted successfully",  
+"Success", 
+JOptionPane.INFORMATION_MESSAGE); 
+searchField.setText(""); 
+outputArea.setText(""); 
+} else { 
+JOptionPane.showMessageDialog(LibraryUI.this,  
+"No book found with ID: " + id,  
+"Error", JOptionPane.ERROR_MESSAGE); 
+} 
+} catch (NumberFormatException ex) { 
+JOptionPane.showMessageDialog(LibraryUI.this,  
+"Please enter a valid numeric ID",  
+"Error", JOptionPane.ERROR_MESSAGE); 
+} 
+} 
+} 
+private void displayBooks(List<Book> books) { 
+if (books.isEmpty()) { 
+outputArea.setText("No books found"); 
+return; 
+} 
+StringBuilder sb = new StringBuilder(); 
+for (Book book : books) { 
+sb.append(book.toString()).append("\n"); 
+} 
+outputArea.setText(sb.toString()); 
+} 
+public static void main(String[] args) { 
+SwingUtilities.invokeLater(() -> { 
+LibraryUI ui = new LibraryUI(); 
+ui.setVisible(true); 
+}); 
+} 
+}
