@@ -1,0 +1,9 @@
+1.Database Setup: 
+o Create MySQL database using the provided SQL script 
+o Update DBUtil.java with your MySQL credentials 
+2.Library Setup: 
+o Download MySQL Connector/J (JDBC driver) and place it 
+in the lib folder 
+o Add the JAR to your project's build path 
+3.Run the Application: 
+o Execute the main method in LibraryUI.java
