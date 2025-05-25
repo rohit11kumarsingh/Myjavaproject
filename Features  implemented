@@ -1,0 +1,18 @@
+1.Project Setup: 
+• JDK and IDE setup complete 
+• Proper project structure created 
+2.Database Schema: 
+• MySQL database with books table 
+• Appropriate fields for book management 
+3.JDBC Connectivity: 
+• DBUtil class for connection management 
+• Proper exception handling 
+4.Model and DAO Classes: 
+• Book model class with all required fields 
+• BookDAO with CRUD operations 
+5.User Interface: 
+• Swing-based GUI with proper 
+component placement 
+• Add, search, display, and delete 
+functionality 
+• Basic error handling and user feedback
