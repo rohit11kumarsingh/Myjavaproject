@@ -1,0 +1,90 @@
+import model.Book; 
+import util.DBUtil; 
+import java.sql.*; 
+import java.util.ArrayList; 
+import java.util.List; 
+public class BookDAO { 
+public boolean addBook(Book book) { 
+String sql = "INSERT INTO books (title, author) VALUES (?, 
+?)"; 
+try (Connection conn = DBUtil.getConnection(); 
+PreparedStatement stmt = 
+conn.prepareStatement(sql)) { 
+stmt.setString(1, book.getTitle()); 
+stmt.setString(2, book.getAuthor()); 
+return stmt.executeUpdate() > 0; 
+} catch (SQLException e) { 
+e.printStackTrace(); 
+return false; 
+} 
+} 
+public List<Book> getAllBooks() { 
+List<Book> books = new ArrayList<>(); 
+String sql = "SELECT * FROM books"; 
+try (Connection conn = DBUtil.getConnection(); 
+Statement stmt = conn.createStatement(); 
+ResultSet rs = stmt.executeQuery(sql)) { 
+while (rs.next()) { 
+Book book = new Book(); 
+book.setId(rs.getInt("id")); 
+book.setTitle(rs.getString("title")); 
+book.setAuthor(rs.getString("author")); 
+books.add(book); 
+} 
+} catch (SQLException e) { 
+e.printStackTrace(); 
+} 
+return books; 
+} 
+public Book searchBookById(int id) { 
+String sql = "SELECT * FROM books WHERE id = ?"; 
+try (Connection conn = DBUtil.getConnection(); 
+PreparedStatement stmt = 
+conn.prepareStatement(sql)) { 
+stmt.setInt(1, id); 
+ResultSet rs = stmt.executeQuery(); 
+if (rs.next()) { 
+Book book = new Book(); 
+book.setId(rs.getInt("id")); 
+book.setTitle(rs.getString("title")); 
+book.setAuthor(rs.getString("author")); 
+return book; 
+} 
+} catch (SQLException e) { 
+e.printStackTrace(); 
+} 
+return null; 
+} 
+public List<Book> searchBooksByTitle(String title) { 
+List<Book> books = new ArrayList<>(); 
+String sql = "SELECT * FROM books WHERE title LIKE ?"; 
+try (Connection conn = DBUtil.getConnection(); 
+PreparedStatement stmt = 
+conn.prepareStatement(sql)) { 
+stmt.setString(1, "%" + title + "%"); 
+ResultSet rs = stmt.executeQuery(); 
+while (rs.next()) { 
+Book book = new Book(); 
+book.setId(rs.getInt("id")); 
+book.setTitle(rs.getString("title")); 
+book.setAuthor(rs.getString("author")); 
+books.add(book); 
+} 
+} catch (SQLException e) { 
+e.printStackTrace(); 
+} 
+return books; 
+} 
+public boolean deleteBook(int id) { 
+String sql = "DELETE FROM books WHERE id = ?"; 
+try (Connection conn = DBUtil.getConnection(); 
+PreparedStatement stmt = 
+conn.prepareStatement(sql)) { 
+stmt.setInt(1, id); 
+return stmt.executeUpdate() > 0; 
+} catch (SQLException e) { 
+e.printStackTrace(); 
+return false; 
+} 
+} 
+}
