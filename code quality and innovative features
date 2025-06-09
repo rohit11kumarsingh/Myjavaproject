@@ -1,0 +1,187 @@
+Objective: Improve code quality with proper encapsulation, 
+comments, and add an innovative feature: saving/loading 
+books to/from a file for persistence. 
+We'll enhance the Library class to include file I/O and add 
+Javadoc comments. 
+import java.util.ArrayList; 
+import java.util.List; 
+import java.io.*; 
+public class Library { 
+private List<Book> books; 
+private static final String FILE_PATH = "library.txt"; 
+public Library() { 
+books = new ArrayList<>(); 
+loadBooks(); 
+} 
+/** 
+* Adds a new book to the library if inputs are valid and 
+ID is unique. 
+* @param title Book title 
+* @param author Book author 
+* @param id Unique book ID 
+*/ 
+public void addBook(String title, String author, String id) { 
+if (!isValidInput(title, author, id)) { 
+return; 
+} 
+if (!isValidIdFormat(id)) { 
+System.out.println("Error: ID must start with 'B' 
+followed by digits (e.g., B001)."); 
+return; 
+} 
+if (searchBookById(id) != null) { 
+System.out.println("Error: Book with ID " + id + " 
+already exists."); 
+return; 
+} 
+Book book = new Book(title, author, id); 
+books.add(book); 
+System.out.println("Book added: " + book); 
+saveBooks(); 
+} 
+/** 
+* Displays all books in the library. 
+*/ 
+public void displayBooks() { 
+if (books.isEmpty()) { 
+System.out.println("No books in the library."); 
+} else { 
+System.out.println("Library Books:"); 
+for (Book book : books) { 
+System.out.println(book); 
+} 
+} 
+} 
+/** 
+* Searches for a book by title (case-insensitive). 
+* @param title Title to search 
+* @return Book if found, null otherwise 
+*/ 
+public Book searchBookByTitle(String title) { 
+if (title == null || title.trim().isEmpty()) { 
+System.out.println("Error: Search title cannot be 
+empty."); 
+return null; 
+} 
+for (Book book : books) { 
+if (book.getTitle().equalsIgnoreCase(title)) { 
+return book; 
+} 
+} 
+System.out.println("Book with title '" + title + "' not 
+found."); 
+return null; 
+} 
+/** 
+* Searches for a book by ID. 
+* @param id ID to search 
+* @return Book if found, null otherwise 
+*/ 
+public Book searchBookById(String id) { 
+if (id == null || id.trim().isEmpty()) { 
+System.out.println("Error: Search ID cannot be 
+empty."); 
+return null; 
+} 
+if (!isValidIdFormat(id)) { 
+System.out.println("Error: Invalid ID format."); 
+return null; 
+} 
+for (Book book : books) { 
+if (book.getId().equals(id)) { 
+return book; 
+} 
+} 
+System.out.println("Book with ID " + id + " not 
+found."); 
+return null; 
+} 
+/** 
+* Deletes a book by ID. 
+* @param id ID of book to delete 
+*/ 
+public void deleteBook(String id) { 
+if (id == null || id.trim().isEmpty()) { 
+System.out.println("Error: ID cannot be empty."); 
+return; 
+} 
+if (!isValidIdFormat(id)) { 
+System.out.println("Error: Invalid ID format."); 
+return; 
+} 
+Book book = searchBookById(id); 
+if (book != null) { 
+books.remove(book); 
+System.out.println("Book deleted: " + book); 
+saveBooks(); 
+} 
+} 
+/** 
+* Validates input fields. 
+* @param title Book title 
+* @param author Book author 
+* @param id Book ID 
+* @return true if all inputs are valid 
+*/ 
+private boolean isValidInput(String title, String author, 
+String id) { 
+if (title == null || title.trim().isEmpty()) { 
+System.out.println("Error: Title cannot be empty."); 
+return false; 
+} 
+if (author == null || author.trim().isEmpty()) { 
+System.out.println("Error: Author cannot be 
+empty."); 
+return false; 
+} 
+if (id == null || id.trim().isEmpty()) { 
+System.out.println("Error: ID cannot be empty."); 
+return false; 
+} 
+return true; 
+} 
+/** 
+* Checks if ID follows the format 'B' followed by digits. 
+* @param id ID to validate 
+* @return true if ID is valid 
+*/ 
+private boolean isValidIdFormat(String id) { 
+return id.matches("^B\\d+$"); 
+} 
+/** 
+* Saves books to a file. 
+*/ 
+private void saveBooks() { 
+try (PrintWriter writer = new PrintWriter(new 
+FileWriter(FILE_PATH))) { 
+for (Book book : books) { 
+writer.println(book.getId() + "," + book.getTitle() + 
+"," + book.getAuthor()); 
+} 
+} catch (IOException e) { 
+System.out.println("Error saving books: " + 
+e.getMessage()); 
+} 
+} 
+/** 
+* Loads books from a file. 
+*/ 
+private void loadBooks() { 
+try (BufferedReader reader = new BufferedReader(new 
+FileReader(FILE_PATH))) { 
+String line; 
+while ((line = reader.readLine()) != null) { 
+String[] parts = line.split(",", 3); 
+if (parts.length == 3) { 
+books.add(new Book(parts[1], parts[2], 
+parts[0])); 
+} 
+} 
+} catch (FileNotFoundException e) { 
+// File doesn't exist yet, start with empty library 
+} catch (IOException e) { 
+System.out.println("Error loading books: " + 
+e.getMessage()); 
+} 
+}
+}
