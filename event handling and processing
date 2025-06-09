@@ -1,0 +1,89 @@
+Objective: Enhance the system to handle user interactions 
+more robustly, ensuring smooth flow and feedback. 
+The menu-driven interface in Step 3 already handles basic 
+events (user inputs). We'll improve it by adding 
+confirmation prompts for critical actions like deletion and 
+looping back to the menu after 
+import java.util.Scanner; 
+public class Main { 
+public static void main(String[] args) { 
+Library library = new Library(); 
+Scanner scanner = new Scanner(System.in); 
+int choice; 
+do { 
+System.out.println("\nLibrary Management 
+System"); 
+System.out.println("1. Add Book"); 
+System.out.println("2. Display All Books"); 
+System.out.println("3. Search Book by Title"); 
+System.out.println("4. Search Book by ID"); 
+System.out.println("5. Delete Book"); 
+System.out.println("6. Exit"); 
+System.out.print("Enter choice: "); 
+try { 
+choice = Integer.parseInt(scanner.nextLine()); 
+} catch (NumberFormatException e) { 
+System.out.println("Error: Please enter a valid 
+number."); 
+choice = 0; 
+continue; 
+} 
+switch (choice) { 
+case 1: 
+System.out.print("Enter title: "); 
+String title = scanner.nextLine(); 
+System.out.print("Enter author: "); 
+String author = scanner.nextLine(); 
+System.out.print("Enter ID: "); 
+String id = scanner.nextLine(); 
+library.addBook(title, author, id); 
+break; 
+case 2: 
+library.displayBooks(); 
+break; 
+case 3: 
+System.out.print("Enter title to search: "); 
+Book bookByTitle = 
+library.searchBookByTitle(scanner.nextLine()); 
+if (bookByTitle != null) { 
+System.out.println("Found: " + bookByTitle); 
+} 
+break; 
+case 4: 
+System.out.print("Enter ID to search: "); 
+Book bookById = 
+library.searchBookById(scanner.nextLine()); 
+if (bookById != null) { 
+System.out.println("Found: " + bookById); 
+} 
+break; 
+case 5: 
+System.out.print("Enter ID to delete: "); 
+String deleteId = scanner.nextLine(); 
+Book bookToDelete = 
+library.searchBookById(deleteId); 
+if (bookToDelete != null) { 
+System.out.print("Confirm deletion of " + 
+bookToDelete + "? (y/n): "); 
+if 
+(scanner.nextLine().trim().equalsIgnoreCase("y")) { 
+library.deleteBook(deleteId); 
+} else { 
+System.out.println("Deletion cancelled."); 
+} 
+} 
+break; 
+case 6: 
+System.out.println("Exiting..."); 
+break; 
+default: 
+System.out.println("Invalid choice. Try again."); 
+} 
+if (choice != 6) { 
+System.out.println("\nPress Enter to continue..."); 
+scanner.nextLine(); 
+} 
+} while (choice != 6); 
+scanner.close(); 
+} 
+} 
